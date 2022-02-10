@@ -8,3 +8,11 @@ Getting information from: College of Physicians and Surgeons of Ontario (CPSO) w
 About CPSO:https://www.cpso.on.ca/About/What-we-do
 
 Doctor search URL: https://doctors.cpso.on.ca/?search=general
+
+
+Possible improvements:
+1. Improve the code to include scraping gender information of the doctor
+2. Modify the code to select specialists of interest and scrape the results
+3. Create a map of the scraped results
+4. Create a dashboard with interactive inputs and scraping based on inputs
+5. Create a simple application to show nearby doctors info based on user's postal code
