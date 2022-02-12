@@ -205,11 +205,14 @@ locationTable.columns = ['Location','LocationCount']
 allDocsDf = pd.merge(allDocsDf,locationTable, on='Location')
 allDocsDf['LocationFlag'] = np.where(allDocsDf['LocationCount']>1,"Multiple doctors", "Single practitioner location")
 allDocsDf = allDocsDf.drop("LocationCount", axis=1)
-
-# Getting ohone numbers of practice locations with maximum doctors
-print(allDocsDf['Phone'].value_counts())
 print(allDocsDf.shape)
 print(allDocsDf.head(20))
+
+# Getting phone numbers of practice locations with more doctors associated with it, in descending order
+print("Phone numbers associated with multiple doctors: ")
+print(allDocsDf['Phone'].value_counts())
+locationTable.to_csv('Phone directory.csv', header=True)
+
 
 # Write the results in a csv file
 allDocsDf.to_csv('Results_family doctors KWCG.csv', header=True)
