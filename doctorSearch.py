@@ -211,7 +211,13 @@ print(allDocsDf.head(20))
 # Getting phone numbers of practice locations with more doctors associated with it, in descending order
 print("Phone numbers associated with multiple doctors: ")
 print(allDocsDf['Phone'].value_counts())
-locationTable.to_csv('Phone directory.csv', header=True)
+phoneTable = pd.DataFrame(allDocsDf['Phone'].value_counts().reset_index())
+phoneTable.columns = ['Phone','PhoneCount']
+phoneTable = pd.merge(phoneTable,allDocsDf[['Phone','Location','City']], on='Phone', how="left")
+phoneTable = phoneTable.drop_duplicates(subset=None, keep='first', inplace=False)
+print(phoneTable.shape)
+print(phoneTable.head(10))
+phoneTable.to_csv('Phone directory.csv', header=True)
 
 
 # Write the results in a csv file
