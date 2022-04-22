@@ -7,6 +7,8 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 
+from math import sin, cos, sqrt, atan2, radians
+
 import time
 import os
 import pandas as pd
@@ -131,4 +133,44 @@ print(KWCGpostcodes.head(10))
 # KWCGpostcodes.to_csv("KWCGpostcodes_Latlong.csv",header=True, index=False) #save to csv file
 uniqueKWCGcodes = KWCGpostcodes
 uniqueKWCGcodes.drop_duplicates(subset=['Latitude','Longitude'],keep = 'first', inplace=True)
-print(uniqueKWCGcodes)  #There are only 29 unique Lat-long postal codes in KWCG area. We can build an effective distance matrix based only on these 29 postalcodes
+#print(uniqueKWCGcodes)  #There are only 29 unique Lat-long postal codes in KWCG area. We can build an effective distance matrix based only on these 29 postalcodes
+
+# Create an ID column in the unique lat long dataframe
+uniqueKWCGcodes['ID'] = range(len(uniqueKWCGcodes['Postalcode']))
+# Create columns for the distance matrix - columns with names 0-len(uniqueKWCGcodes)
+uniqueKWCGcodes[list(range(len(uniqueKWCGcodes['Postalcode'])))] = 0.0
+# Reset index to refer to each element of dataframe in for loop
+uniqueKWCGcodes = uniqueKWCGcodes.reset_index()
+uniqueKWCGcodes = uniqueKWCGcodes.drop(['index'],axis=1)
+print(uniqueKWCGcodes)
+
+# writing a for loop to calculate distance between two unique lat long coordinates
+for i in range(len(uniqueKWCGcodes['Postalcode'])):   #range(len(uniqueKWCGcodes['Postalcode']))
+    for j in range(len(uniqueKWCGcodes['Postalcode'])):
+        if i==j:
+            distance = 0.0
+            pass
+        else: 
+            lat1 = radians(uniqueKWCGcodes['Latitude'][i])
+            lat2 = radians(uniqueKWCGcodes['Latitude'][j])
+            long1 = radians(uniqueKWCGcodes['Longitude'][i])
+            long2 = radians(uniqueKWCGcodes['Longitude'][j])
+                        
+            latdiff = lat2 - lat1
+            longdiff = long2 - long1
+
+            a = sin(latdiff / 2)**2 + cos(lat1) * cos(lat2) * sin(longdiff / 2)**2
+            c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+            # calculate distance between 2 points in km
+            distance = R * c
+        
+        uniqueKWCGcodes.at[j,i] = distance
+        #end of else block
+    # end of inner for loop
+#end of outer for loop
+
+print(uniqueKWCGcodes)
+#uniqueKWCGcodes.to_csv("UniqueKWCGcodes.csv",header=True, index=False)
+
+
