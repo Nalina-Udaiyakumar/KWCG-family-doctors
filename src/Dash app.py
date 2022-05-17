@@ -104,9 +104,6 @@ if __name__ == "__main__":
 [State('doctors-datatable', 'selected_row_indices')])
 def updated_selected_row_indices(clickData, selected_row_indices):
   if clickData:
-    for point in clickData['points']:
-      if point['pointNumber'] in selected_row_indices:
-        selected_row_indices.remove(point['pointNumber'])
-      else:
-        selected_row_indices.append(point['pointNumber'])
-        return selected_row_indices
+    selected_row_indices = uniqueKWCGcodes[uniqueKWCGcodes['PostalCode'] == clickData]
+    return selected_row_indices
+    ## ---- to be updated soon ----
