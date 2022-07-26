@@ -102,6 +102,27 @@ app.layout = dbc.Container([
         ])  # end of second row        
     ])
 
+# # # Define callbacks
+@callback(
+    Output('doctors-datatable', 'data'),
+    Output('doctors-datatable', 'page_size'),       
+    Input('mode_radio','value'),
+    Input('location_radio', 'value'),
+    Input('postalcode_input', 'value'),
+    Input('radius_slider', 'value'),
+    Input('row_drop', 'value')
+)
+def updateDoctorsTable(mode_v,location_v,postalcode_v,radius_v,row_v):
+    doctordf = KWCGdoctors.copy()
+    
+    if location_v:
+        doctordf = doctordf[doctordf['City'].isin(location_v)]
+
+    if postlcode_v:
+      doctordf = doctordf[doctordf['Postal Code'].isin(postalcode_v)]
+        
+    return doctordf.to_dict('records'), row_v
+
 # Run the app
 if __name__ == "__main__":
     app.run_server(debug=True, port=8058)
