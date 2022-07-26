@@ -43,67 +43,66 @@ CONTENT_STYLE = {
     'padding': '2rem' '1rem',
 }
 
-app.layout = dbc.Container(
-    [
-        dbc.Row(dbc.Col(html.H2('Family Doctor Search - KW region', className='text-center text-primary, mb-3'))),  # header row
-        
+app.layout = dbc.Container([
+        dbc.Row(
+            dbc.Col(html.H2('Family Doctor Search - KW region', className='text-center text-primary, mb-3'))),  # header row
+            
         dbc.Row([  # start of second row 
-            dbc.Col([  # first column on second row - side bar
+            dbc.Col([   # first column on second row - side bar
             dbc.Row([
-                html.H4('Search by:'),
-                dcc.RadioItems(
-                    id = 'mode_radio',
-                    options = ['Location ', 'Distance '], 
-                    value = 'Location ',
-                    inline = False),
+                dbc.Label("Show number of rows:"),
+                row_drop := dcc.Dropdown(value=15, clearable=False, style={'width':'35%'},
+                                        options=[10,15,20,30]),
+                html.Hr()]),
+            dbc.Row([
+                dbc.Label('Search by:'), #html.H4
+                mode_radio := dcc.RadioItems(
+                                        options = ['Location ', 'Distance '], 
+                                        value = 'Location ',
+                                        inline = False),
                 html.Hr()]),
             dbc.Row([    
-                html.H6('Select location'),
-                dcc.RadioItems(
-                    id = 'location_radio',
-                    options = ['Kitchener ', 'Waterloo ', 'Cambridge ', 'Guelph '], 
-                    value = 'Kitchener ',
-                    inline = False),
+                dbc.Label('Select location'), #html.H6
+                location_radio := dcc.RadioItems(
+                                        options = ['Kitchener ', 'Waterloo ', 'Cambridge ', 'Guelph '], 
+                                        value = 'Kitchener ',
+                                        inline = False),
                 html.Hr()]),
             dbc.Row([
-                html.H6('Enter postal code (ex. N2M0A1)'),
-                dcc.Input(
-                    id = 'postalcode_input',
-                    type="text", 
-                    placeholder="", 
-                    debounce=True),
-                html.H6('Select radius of search'),
-                dcc.Slider(id="radius_slider", 
+                dbc.Label('Enter postal code (ex. N2M0A1)'),  #html.H6
+                postalcode_input := dcc.Input(
+                    #                   id = 'postalcode_input',  # if Python 3.7 or lower, add this instead of using the walrus (:=) operator
+                                        type="text", 
+                                        placeholder="", 
+                                        debounce=True),
+                dbc.Label('Select radius of search'),  #html.H6
+                radius_slider := dcc.Slider( 
                            min=5, max=50, step=None,
                            marks={5:"5", 10:"10", 15:"15", 20:"20", 30:"30", 50:"50"},
                            value=0)]),
-            html.Button('Search doctors', id='search_button', n_clicks=0)
+#             html.Button('Search doctors', id='search_button', n_clicks=0)
             ], width={'size': 2, 'offset': 0, 'order': 1}),  # width first column on second row
             
             dbc.Col([  # second column on second row - data table
-            html.H5('List of doctors', className='text-center'),
+            html.H5('List of doctors', className='text-left'),
             dt.DataTable(
                 id='doctors-datatable',
-                rows=KWCGdoctors.to_dict('records'),
+                data=KWCGdoctors.to_dict('records'),
+                columns = [{'name':i, 'id':i} for i in KWCGdoctors.columns],
                 editable=False,
-                row_selectable=True,
-                filterable=True,
-                sortable=True,
-                selected_row_indices=[]
+                page_size=15,
+                page_action='native',
+                style_data = {
+                    'width': '150px', 'minWidth': '150px', 'maxWidth': '150px',
+                    'overflow': 'hidden',
+                    'textoverflow': 'ellipsis',
+                }
                 )
             ], width={'size': 9, 'offset': 0, 'order': 2}),  # width second column on second row
         ])  # end of second row        
-    ], fluid=True)
+    ])
 
 # Run the app
 if __name__ == "__main__":
     app.run_server(debug=True, port=8058)
     
-@app.callback(Output('doctors-datatable', 'selected_row_indices'),
-[Input('doctors-datatable', 'clickData')],
-[State('doctors-datatable', 'selected_row_indices')])
-def updated_selected_row_indices(clickData, selected_row_indices):
-  if clickData:
-    selected_row_indices = uniqueKWCGcodes[uniqueKWCGcodes['PostalCode'] == clickData]
-    return selected_row_indices
-    ## ---- to be updated soon ----
