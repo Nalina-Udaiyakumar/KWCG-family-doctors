@@ -151,8 +151,18 @@ def updateDoctorsTable(mode_v,location_v,postalcode_v,radius_v,row_v):
     if location_v:
         doctordf = doctordf[doctordf['City'].isin(location_v)]
 
-    if postlcode_v:
-      doctordf = doctordf[doctordf['Postal Code'].isin(postalcode_v)]
+    if postalcode_v:
+        latgiven = KWCGpostalcodes[KWCGpostalcodes['Postalcode']==postalcode_v]['Latitude']
+        longgiven = KWCGpostalcodes[KWCGpostalcodes['Postalcode']==postalcode_v]['Longitude']
+
+        KWCGdoctors['LatGiven'] = latgiven
+        KWCGdoctors['LongGiven'] = longgiven                                                                        
+        KWCGdoctors['DistanceCol'] = df['dist'] = Distance(KWCGdoctors['Latitude'].tolist(),KWCGdoctors['Longitude'].tolist(),
+                                                          KWCGdoctors['LatGiven'].tolist(),KWCGdoctors['LongGiven'].tolist())
+        # sort KWCGdoctors in ascending order of DistanceCol
+        KWCGdoctors.sort_values(by="DistanceCol",ascending=True)
+
+        doctordf = KWCGdoctors[KWCGdoctors['DistanceCol']>=radius_v]
         
     return doctordf.to_dict('records'), row_v
 
