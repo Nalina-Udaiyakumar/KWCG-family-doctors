@@ -9,6 +9,10 @@ import plotly.graph_objects as go
 from jupyter_dash import JupyterDash
 import dash_table_experiments as dt
 
+from math import sin, cos, sqrt, atan2, radians
+import pgeocode
+from pyproj import Geod
+
 import os
 import pandas as pd
 import numpy as np
@@ -16,13 +20,42 @@ import numpy as np
 # Set working directory
 os.chdir(r"---Your directory path---")
 print(os.getcwd())
+print("The current running version of python is: ",platform.python_version())
+## this dash app filtering call back requires Python 3.8 or higher.
 
 # Read csv files - KWCG doctors list and distance matrix
-uniqueKWCGcodes = pd.read_csv("UniqueKWCGcodes.csv",header=0)
-print(uniqueKWCGcodes.shape)
+distanceTable = pd.read_csv("UniqueKWCGcodes.csv",header=0)
+print(distanceTable.shape)
 
-KWCGdoctors = pd.read_csv("Results_family doctors KWCG.csv",header=0)
+KWCGpostalcodes = pd.read_csv("KWCGpostcodes_Latlong.csv",header=0)
+print(KWCGpostalcodes.shape)
+
+KWCGdoctors = pd.read_csv("Results_family doctors KWCG.csv",header=0, index_col=0)
 print(KWCGdoctors.shape)
+
+## define function to calculate distance between 2 latitude and longitude points
+wgs84_geod = Geod(ellps='WGS84') #Distance will be measured on this ellipsoid - more accurate than a spherical method
+
+#Get distance between pairs of lat-lon points
+def Distance(lat1,lon1,lat2,lon2):
+    az12,az21,dist = wgs84_geod.inv(lon1,lat1,lon2,lat2) #Yes, this order is correct
+    return dist
+
+# Remove unwanted columns from KWCGdoctors df
+KWCGdoctors = KWCGdoctors.drop(['Specializations','Fax','LastName','FirstName','Former Name','LocationFlag'], axis=1)
+
+# Check for doctor locations with null postal code values - removing them
+print(KWCGdoctors[KWCGdoctors['Postal Code'].isnull()])
+KWCGdoctors = KWCGdoctors.dropna(subset=['Postal Code'])
+print(KWCGdoctors.shape)
+print(KWCGdoctors['Postal Code'].isnull().sum()) # check again for nulls in the postal code column
+
+# add latitude and longitude to each postal code in the KWCGdoctors dataframe
+KWCGdoctors = KWCGdoctors.merge(KWCGpostalcodes.drop(['City'],axis=1), left_on='Postal Code', right_on='Postalcode', how='left')
+KWCGdoctors = KWCGdoctors.drop(['Postalcode'],axis=1)
+print(KWCGdoctors.shape)
+print(KWCGdoctors.columns)
+
 
 # Initialise the app
 app = JupyterDash(__name__, external_stylesheets=[dbc.themes.FLATLY])
