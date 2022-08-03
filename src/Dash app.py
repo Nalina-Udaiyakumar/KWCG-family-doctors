@@ -23,6 +23,12 @@ print(os.getcwd())
 print("The current running version of python is: ",platform.python_version())
 ## this dash app filtering call back requires Python 3.8 or higher.
 
+# Styling components
+FONT_AWESOME = (
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+)
+external_stylesheets = [dbc.themes.BOOTSTRAP, FONT_AWESOME]
+
 # Read csv files - KWCG doctors list and distance matrix
 distanceTable = pd.read_csv("UniqueKWCGcodes.csv",header=0)
 print(distanceTable.shape)
@@ -55,6 +61,11 @@ KWCGdoctors = KWCGdoctors.merge(KWCGpostalcodes.drop(['City'],axis=1), left_on='
 KWCGdoctors = KWCGdoctors.drop(['Postalcode'],axis=1)
 print(KWCGdoctors.shape)
 print(KWCGdoctors.columns)
+
+# Populating options for the interactive input controls
+# Populting regions
+region_options = KWCGdoctors['City'].unique()
+
 
 # Initialise the app
 app = JupyterDash(__name__, external_stylesheets=[dbc.themes.FLATLY])
@@ -139,7 +150,7 @@ app.layout = dbc.Container([
     Input('row_drop', 'value')
 )
 def updateDoctorsTable(mode_v,location_v,postalcode_v,radius_v,row_v): #,num_clicks
-    global doctordf
+    global doctordf   # define doctordf as a global variable so the download option can access the filetered search list of doctors
     
     doctordf = KWCGdoctors.copy()
     
