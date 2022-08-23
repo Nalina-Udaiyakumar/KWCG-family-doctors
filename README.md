@@ -11,8 +11,9 @@ About CPSO:https://www.cpso.on.ca/About/What-we-do
 
 Doctor search URL from CPSO website: https://doctors.cpso.on.ca/?search=general 
 
+![KW doctor search dashboard](https://user-images.githubusercontent.com/15101045/182699992-c25a8bdf-a99e-4ace-b169-98154f519f22.png)
 
-![KW doctor search app demo] (https://user-images.githubusercontent.com/15101045/186048351-9a77fc88-a2a2-4f48-a8fc-f5f5c3bf5a7a.mp4)
+KW doctor search app demo - (https://user-images.githubusercontent.com/15101045/186048351-9a77fc88-a2a2-4f48-a8fc-f5f5c3bf5a7a.mp4)
 
 
 
