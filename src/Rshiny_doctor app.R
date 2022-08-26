@@ -22,6 +22,9 @@ dim(KWCGdoctors)
 # filter only the rquired columns in KWCGdoctors
 KWCGdoctors <- KWCGdoctors[,c('Name','CPSOID','Location','Phone','City','Postal.Code','Additional.Locations')]
 
+#set global options for page length and filter action of DT
+options(DT.options = list(pageLength = 5, language = list(search = 'Filter:')))
+
 # Define UI elements
 ui <- fluidPage(
   # theme = bs_theme(version = 4, bootswatch = "minty"),
