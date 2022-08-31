@@ -7,7 +7,7 @@ library(shiny)
 library(DT)
 library(geosphere)
 
-setwd("C:/Users/Nalina/Documents/Data science projects/Doctor Search")
+setwd("--Your directory path---")
 getwd()
 
 distanceTable <- read.csv("UniqueKWCGcodes.csv",header=TRUE)
